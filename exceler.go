@@ -58,8 +58,10 @@ func (r *ExcelReport) renderSingleAttribute(ctx map[string]interface{}) {
 
 		prop := getListProp(row)
 		if prop != "" {
-			rowNumber++
-			continue
+			if isArray(ctx, prop) {
+				rowNumber++
+				continue
+			}
 		}
 
 		r.renderRow(row, rowNumber, ctx)
