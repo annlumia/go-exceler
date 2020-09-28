@@ -122,7 +122,6 @@ func (r *ExcelReport) Render(ctx map[string]interface{}) {
 	mergedCells, _ := r.f.GetMergeCells(r.sheetName)
 
 	r.renderSingleAttribute(ctx)
-	r.renderArrayAttribute(ctx)
 
 	// Set nilai pada cell yang digabungkan (merge cell)
 	for _, mergedCell := range mergedCells {
@@ -142,6 +141,8 @@ func (r *ExcelReport) Render(ctx map[string]interface{}) {
 			r.f.SetCellValue(r.sheetName, axis, cellValue)
 		}
 	}
+
+	r.renderArrayAttribute(ctx)
 }
 
 // Save report to file
