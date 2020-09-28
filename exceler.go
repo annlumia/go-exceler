@@ -25,6 +25,10 @@ func (r *ExcelReport) renderRow(row []string, rowNumber int, ctx map[string]inte
 	}
 
 	for colIndex, cellValue := range renderedRow {
+		if cellValue == "" {
+			continue
+		}
+
 		colNum := colIndex + 1
 		colName, err := excelize.ColumnNumberToName(colNum)
 		if err != nil {
@@ -37,6 +41,7 @@ func (r *ExcelReport) renderRow(row []string, rowNumber int, ctx map[string]inte
 		if formula != "" {
 			continue
 		}
+
 		v, err := strconv.ParseFloat(cellValue, 64)
 		if err == nil {
 			r.f.SetCellValue(r.sheetName, axis, v)
