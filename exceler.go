@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
-	"regexp"
 	"strconv"
 	"strings"
 
@@ -12,47 +11,10 @@ import (
 	"github.com/aymerick/raymond"
 )
 
-var (
-	rgx         = regexp.MustCompile(`\{\{\s*(\w+)\.\w+\s*\}\}`)
-	rangeRgx    = regexp.MustCompile(`\{\{\s*range\s+(\w+)\s*\}\}`)
-	rangeEndRgx = regexp.MustCompile(`\{\{\s*end\s*\}\}`)
-)
-
 // ExcelReport struct of excel reporting
 type ExcelReport struct {
 	f         *excelize.File
 	sheetName string
-}
-
-func getRangeProp(in []string) string {
-	for _, cellValue := range in {
-		match := rangeRgx.FindAllStringSubmatch(cellValue, -1)
-		if match != nil {
-			return match[0][1]
-		}
-	}
-	return ""
-}
-
-func getListProp(in []string) string {
-	for _, cell := range in {
-		if match := rgx.FindAllStringSubmatch(cell, -1); match != nil {
-			return match[0][1]
-		}
-	}
-	return ""
-}
-
-func isArray(in map[string]interface{}, prop string) bool {
-	val, ok := in[prop]
-	if !ok {
-		return false
-	}
-	switch reflect.TypeOf(val).Kind() {
-	case reflect.Array, reflect.Slice:
-		return true
-	}
-	return false
 }
 
 func (r *ExcelReport) renderRow(row []string, rowNumber int, ctx map[string]interface{}) {
@@ -82,7 +44,6 @@ func (r *ExcelReport) renderRow(row []string, rowNumber int, ctx map[string]inte
 			r.f.SetCellValue(r.sheetName, axis, cellValue)
 		}
 	}
-
 }
 
 func (r *ExcelReport) renderSingleAttribute(ctx map[string]interface{}) {
@@ -105,7 +66,6 @@ func (r *ExcelReport) renderSingleAttribute(ctx map[string]interface{}) {
 
 		rowNumber++
 	}
-
 }
 
 func (r *ExcelReport) renderArrayAttribute(ctx map[string]interface{}) {
@@ -141,7 +101,6 @@ func (r *ExcelReport) renderArrayAttribute(ctx map[string]interface{}) {
 
 		rowNumber++
 	}
-
 }
 
 func renderContext(cellTemplate string, ctx interface{}) (string, error) {
@@ -183,7 +142,6 @@ func (r *ExcelReport) Render(ctx map[string]interface{}) {
 			r.f.SetCellValue(r.sheetName, axis, cellValue)
 		}
 	}
-
 }
 
 // Save report to file
