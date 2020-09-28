@@ -149,6 +149,20 @@ func (r *ExcelReport) Save(f string) error {
 	return r.f.SaveAs(f)
 }
 
+// GetBuffer ...
+func (r *ExcelReport) GetBuffer() (*bytes.Buffer, error) {
+	return r.f.WriteToBuffer()
+}
+
+// GetBinary ...
+func (r *ExcelReport) GetBinary() ([]byte, error) {
+	buff, err := r.GetBuffer()
+	if err != nil {
+		return nil, err
+	}
+	return buff.Bytes(), err
+}
+
 // NewFromFile Create new template from excel file
 func NewFromFile(filename string, sheetName string) (*ExcelReport, error) {
 	template, err := excelize.OpenFile(filename)
