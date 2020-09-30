@@ -25,10 +25,6 @@ func (r *ExcelReport) renderRow(row []string, rowNumber int, ctx map[string]inte
 	}
 
 	for colIndex, cellValue := range renderedRow {
-		if cellValue == "" {
-			continue
-		}
-
 		colNum := colIndex + 1
 		colName, err := excelize.ColumnNumberToName(colNum)
 		if err != nil {
@@ -36,6 +32,12 @@ func (r *ExcelReport) renderRow(row []string, rowNumber int, ctx map[string]inte
 		}
 
 		axis := fmt.Sprintf("%s%v", colName, rowNumber)
+		cellOldValue, _ := r.f.GetCellValue(r.sheetName, axis)
+
+		if cellValue == "" && cellOldValue == "" {
+			continue
+		}
+
 		formula, _ := r.f.GetCellFormula(r.sheetName, axis)
 
 		if formula != "" {
@@ -90,12 +92,13 @@ func (r *ExcelReport) renderArrayAttribute(ctx map[string]interface{}) {
 
 				arr := reflect.ValueOf(ctx[prop])
 				ctxBackup := ctx[prop]
+				arrayLength := arr.Len()
 
-				for i := 0; i < arr.Len()-1; i++ {
+				for i := 0; i < arrayLength-1; i++ {
 					r.f.DuplicateRow(r.sheetName, rowNumber)
 				}
 
-				for i := 0; i < arr.Len(); i++ {
+				for i := 0; i < arrayLength; i++ {
 					ctx[prop] = arr.Index(i).Interface()
 					r.renderRow(row, rowNumber+i, ctx)
 				}
@@ -111,6 +114,9 @@ func (r *ExcelReport) renderArrayAttribute(ctx map[string]interface{}) {
 }
 
 func renderContext(cellTemplate string, ctx interface{}) (string, error) {
+	if !(strings.Contains(cellTemplate, "{{") && strings.Contains(cellTemplate, "}}")) {
+		return cellTemplate, nil
+	}
 	tpl := strings.Replace(cellTemplate, "{{", "{{{", -1)
 	tpl = strings.Replace(tpl, "}}", "}}}", -1)
 	template, err := raymond.Parse(tpl)
