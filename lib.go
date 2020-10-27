@@ -12,6 +12,13 @@ func getRangeProp(in []string) string {
 	return ""
 }
 
+func getProp(in string) string {
+	if match := rgx.FindAllStringSubmatch(in, -1); match != nil {
+		return match[0][1]
+	}
+	return ""
+}
+
 func getListProp(in []string) string {
 	for _, cell := range in {
 		if match := rgx.FindAllStringSubmatch(cell, -1); match != nil {

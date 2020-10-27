@@ -37,6 +37,9 @@ func (r *ExcelReport) renderRow(row []string, rowNumber int, ctx map[string]inte
 		if cellValue == "" && cellOldValue == "" {
 			continue
 		}
+		if cellValue == "" && row[colIndex] == "" {
+			continue
+		}
 
 		formula, _ := r.f.GetCellFormula(r.sheetName, axis)
 
@@ -145,7 +148,13 @@ func (r *ExcelReport) Render(ctx map[string]interface{}) {
 			continue
 		}
 		cellValue := mergedCell[1]
-		cellValue, _ = renderContext(cellValue, ctx)
+
+		prop := getProp(cellValue)
+		if prop != "" {
+			if !isArray(ctx, prop) {
+				cellValue, _ = renderContext(cellValue, ctx)
+			}
+		}
 
 		v, err := strconv.ParseFloat(cellValue, 64)
 		if err == nil {
