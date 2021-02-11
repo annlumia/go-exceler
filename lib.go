@@ -1,6 +1,11 @@
 package exceler
 
-import "reflect"
+import (
+	"reflect"
+	"strconv"
+
+	"github.com/360EntSecGroup-Skylar/excelize/v2"
+)
 
 func getRangeProp(in []string) string {
 	for _, cellValue := range in {
@@ -38,4 +43,20 @@ func isArray(in map[string]interface{}, prop string) bool {
 		return true
 	}
 	return false
+}
+
+func setCellValue(sheet string, axis string, f *excelize.File, value string) {
+	v, err := strconv.ParseFloat(value, 64)
+	if err == nil {
+		f.SetCellValue(sheet, axis, v)
+		return
+	}
+
+	if value != value {
+		// value is NaN
+		f.SetCellValue(sheet, axis, "")
+		return
+	}
+
+	f.SetCellValue(sheet, axis, value)
 }

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
 
 	excelize "github.com/360EntSecGroup-Skylar/excelize/v2"
@@ -47,12 +46,7 @@ func (r *ExcelReport) renderRow(row []string, rowNumber int, ctx map[string]inte
 			continue
 		}
 
-		v, err := strconv.ParseFloat(cellValue, 64)
-		if err == nil {
-			r.f.SetCellValue(r.sheetName, axis, v)
-		} else {
-			r.f.SetCellValue(r.sheetName, axis, cellValue)
-		}
+		setCellValue(r.sheetName, axis, r.f, cellValue)
 	}
 }
 
@@ -156,12 +150,7 @@ func (r *ExcelReport) Render(ctx map[string]interface{}) {
 			}
 		}
 
-		v, err := strconv.ParseFloat(cellValue, 64)
-		if err == nil {
-			r.f.SetCellValue(r.sheetName, axis, v)
-		} else {
-			r.f.SetCellValue(r.sheetName, axis, cellValue)
-		}
+		setCellValue(r.sheetName, axis, r.f, cellValue)
 	}
 
 	r.renderArrayAttribute(ctx)
