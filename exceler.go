@@ -124,6 +124,9 @@ func renderContext(cellTemplate string, ctx interface{}) (string, error) {
 	if err != nil {
 		return cellTemplate, err
 	}
+	if out == "NaN" {
+		return "", nil
+	}
 	return out, nil
 }
 
